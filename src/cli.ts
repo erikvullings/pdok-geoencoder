@@ -1,6 +1,4 @@
 import * as commandLineArgs from 'command-line-args';
-import * as path from 'path';
-import * as fs from 'fs';
 import { ICommandOptions } from './models/command-options';
 import { pdokGeoencoder } from './pdok-geoencoder';
 import { OptionDefinition } from 'command-line-args';
@@ -43,14 +41,14 @@ export class CommandLineInterface {
       name: 'latitude',
       alias: 'y',
       type: Number,
-      typeLabel: 'Number',
+      typeLabel: 'String',
       description: 'Name of the output column for the latitude. By default, "lat".',
     },
     {
       name: 'longitude',
       alias: 'x',
       type: Number,
-      typeLabel: 'Number',
+      typeLabel: 'String',
       description: 'Name of the output column for the longitude. By default, "lon".',
     },
     {
