@@ -1,6 +1,5 @@
 import * as fs from 'fs';
 import { resolve } from 'path';
-import axios from 'axios';
 import { ICommandOptions } from './models/command-options';
 import { parse, ParseStepResult } from 'papaparse';
 import { Feature, FeatureCollection, Point } from 'geojson';
@@ -60,31 +59,40 @@ export interface IPdokSearchResult {
 const pointRegex = /POINT\(([\d.]+) ([\d.]+)\)/;
 
 const pdokLocationSvc = async (pc: string, hn: string, toev: string = '') => {
-  const pdokUrl = `https://geodata.nationaalgeoregister.nl/locatieserver/v3/free?q=${pc.replace(
-    / /g,
-    ''
-  )} ${hn} ${toev}`;
+  hn = hn.replace('_', ', ');
+  const pdokUrl = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${pc.replace(/ /g, '')} ${hn} ${toev}`;
   // await sleep(10);
   console.log(`PDOK resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''}`);
-  const searchResult = await axios.get<IPdokSearchResult>(pdokUrl).catch((_) => {
+  const response = await fetch(pdokUrl).catch((_) => {
     console.error(`Error resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''} !`);
     console.error('');
     return undefined;
   });
-  if (searchResult && searchResult.data && searchResult.data.response) {
+  if (!response.ok) {
+    console.error(`Error resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''}!`);
+    return undefined;
+  }
+  const searchResult = (await response.json()) as IPdokSearchResult;
+  // console.log(searchResult)
+  if (searchResult) {
     const {
-      data: {
-        response: { docs = [] },
-      },
+      response: { docs = [] },
     } = searchResult;
     const found = docs.filter((doc) => doc.bron === 'BAG' && doc.type === 'adres');
 
     if (found.length > 0) {
       const best = found[0];
+      console.log(best);
       const { centroide_ll, centroide_rd } = best;
       const ll = pointRegex.exec(centroide_ll);
       const rd = pointRegex.exec(centroide_rd);
       if (ll && rd) {
+        console.log({
+          lat: +ll[2],
+          lon: +ll[1],
+          x: +rd[1],
+          y: +rd[2],
+        });
         return {
           lat: +ll[2],
           lon: +ll[1],
