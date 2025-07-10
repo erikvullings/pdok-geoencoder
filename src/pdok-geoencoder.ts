@@ -62,24 +62,17 @@ type Location = {
 /** Extracts two numbers from a geopoint */
 const pointRegex = /POINT\(([\d.]+) ([\d.]+)\)/;
 
-const pdokLocationSvc = async (
-  pc: string,
-  hn: string,
-  toev: string = '',
-  includePdokProperties: boolean = false,
-  lineNumber = 0
-) => {
-  hn = hn.replace('_', ', ');
-  const pdokUrl = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${pc.replace(/ /g, '')} ${hn} ${toev}`;
+const pdokLocationSvc = async (pc: string, hn: string, includePdokProperties: boolean = false, lineNumber = 0) => {
+  const pdokUrl = `https://api.pdok.nl/bzk/locatieserver/search/v3_1/free?q=${pc.replace(/ /g, '')} ${hn}`;
   // await sleep(10);
-  console.log(`${lineNumber}. PDOK resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''}`);
+  console.log(`${lineNumber}. PDOK resolving ${pc}, ${hn}`);
   const response = await fetch(pdokUrl).catch((_) => {
-    console.error(`Error resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''} !`);
+    console.error(`Error resolving ${pc}, ${hn} !`);
     console.error('');
     return undefined;
   });
   if (!response.ok) {
-    console.error(`Error resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''}!`);
+    console.error(`Error resolving ${pc}, ${hn}!`);
     return undefined;
   }
   const searchResult = (await response.json()) as IPdokSearchResult;
@@ -115,7 +108,7 @@ const pdokLocationSvc = async (
       }
     }
   }
-  console.error(`Error resolving ${pc}, ${hn}${toev ? `, ${toev}` : ''}!`);
+  console.error(`Error resolving ${pc}, ${hn}!`);
   return undefined;
 };
 
@@ -285,15 +278,6 @@ export const pdokGeoencoder = (options: ICommandOptions) => {
 
   let lineNumber = 1;
 
-  // Store original console.warn and create filtered version
-  const originalWarn = console.warn;
-  // console.warn = (message: any, ...args: any[]) => {
-  //   if (typeof message === 'string' && message.includes('Duplicate headers found')) {
-  //     return; // Suppress papaparse duplicate headers warning
-  //   }
-  //   originalWarn(message, ...args);
-  // };
-
   parse(fs.createReadStream(filename), {
     header: true,
     skipEmptyLines: true,
@@ -303,7 +287,7 @@ export const pdokGeoencoder = (options: ICommandOptions) => {
       const hn = row.data[housenumber];
       const pc = (row.data[zip] || '').replace(/ /g, '');
       if (hn && pc) {
-        const location = await pdokLocationSvc(pc, hn, '', options.merge, lineNumber++);
+        const location = await pdokLocationSvc(pc, hn, options.merge, lineNumber++);
         if (location) {
           output(row, location);
         } else {
@@ -315,9 +299,6 @@ export const pdokGeoencoder = (options: ICommandOptions) => {
       parser.resume();
     },
     complete: () => {
-      // Restore original console.warn
-      console.warn = originalWarn;
-
       const result = output();
       fs.writeFileSync(outFilename, typeof result === 'string' ? result : JSON.stringify(result));
     },
