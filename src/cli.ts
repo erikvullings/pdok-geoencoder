@@ -59,6 +59,13 @@ export class CommandLineInterface {
       description: 'Converts the input CSV to a new CSV.',
     },
     {
+      name: 'semicolon',
+      alias: 's',
+      type: Boolean,
+      typeLabel: 'Boolean',
+      description: 'Uses a semi-colon as CSV delimiter instead of the default comma.',
+    },
+    {
       name: 'out',
       alias: 'o',
       type: String,

@@ -27,6 +27,7 @@ Options
   -y, --latitude Number      Name of the output column for the latitude. By default, "lat".
   -x, --longitude Number     Name of the output column for the longitude. By default, "lon".
   -c, --toCSV Boolean        Converts the input CSV to a new CSV.
+  -s, --semicolon Boolean    Uses a semi-colon as CSV delimiter instead of the default comma.
   -o, --out String           Optional output filename.
 
 Examples

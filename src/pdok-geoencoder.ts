@@ -116,15 +116,16 @@ const outputFactory = (options: ICommandOptions) => {
     geojson.features = [];
   }
 
+  const delimiter = options.semicolon ? ';' : ',';
   return options.toCSV
     ? (row?: ParseStepResult<unknown>, location = {} as Location) => {
         if (!row) return csv.join('\n');
         if (csv.length === 0) {
           // Add header
-          csv.push([...Object.keys(row.data), latitude, longitude, 'x', 'y'].join(','));
+          csv.push([...Object.keys(row.data), latitude, longitude, 'x', 'y'].join(delimiter));
         }
         const { lat, lon, x, y } = location;
-        csv.push([...Object.keys(row.data).map((key) => row.data[key]), lat, lon, x, y].join(','));
+        csv.push([...Object.keys(row.data).map((key) => row.data[key]), lat, lon, x, y].join(delimiter));
       }
     : (row?: ParseStepResult<unknown>, location?: Location) => {
         if (!row) return geojson;

@@ -11,6 +11,8 @@ export interface ICommandOptions {
   longitude: string;
   /** Converts the input CSV to a new CSV. */
   toCSV: boolean;
+  /** Uses a semi-colon as CSV delimiter (default comma). */
+  semicolon: boolean;
   /** Output file name. */
   out: string;
 }
