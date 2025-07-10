@@ -40,14 +40,14 @@ export class CommandLineInterface {
     {
       name: 'latitude',
       alias: 'y',
-      type: Number,
+      type: String,
       typeLabel: 'String',
       description: 'Name of the output column for the latitude. By default, "lat".',
     },
     {
       name: 'longitude',
       alias: 'x',
-      type: Number,
+      type: String,
       typeLabel: 'String',
       description: 'Name of the output column for the longitude. By default, "lon".',
     },
@@ -71,6 +71,13 @@ export class CommandLineInterface {
       type: String,
       typeLabel: 'String',
       description: 'Optional output filename.',
+    },
+    {
+      name: 'merge',
+      alias: 'm',
+      type: Boolean,
+      typeLabel: 'Boolean',
+      description: 'Merge PDOK properties with existing CSV columns.',
     },
   ];
 
@@ -104,12 +111,14 @@ export class CommandLineInterface {
   ];
 }
 
-const options = commandLineArgs(CommandLineInterface.optionDefinitions) as ICommandOptions;
+const options = (commandLineArgs as any).default
+  ? (commandLineArgs as any).default(CommandLineInterface.optionDefinitions)
+  : (commandLineArgs(CommandLineInterface.optionDefinitions) as ICommandOptions);
 if (!options.file) {
   console.error('Supplied options: ');
   console.error(options);
   console.error('\nNo source specified.\n');
-  const getUsage = require('command-line-usage');
+  const getUsage = require('command-line-usage').default || require('command-line-usage');
   const usage = getUsage(CommandLineInterface.sections);
   console.log(usage);
   process.exit(1);

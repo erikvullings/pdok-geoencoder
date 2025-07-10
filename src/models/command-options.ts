@@ -15,4 +15,6 @@ export interface ICommandOptions {
   semicolon: boolean;
   /** Output file name. */
   out: string;
+  /** Merge PDOK properties with existing CSV columns. */
+  merge: boolean;
 }

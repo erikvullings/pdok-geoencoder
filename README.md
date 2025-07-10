@@ -28,6 +28,7 @@ Options
   -x, --longitude Number     Name of the output column for the longitude. By default, "lon".
   -c, --toCSV Boolean        Converts the input CSV to a new CSV.
   -s, --semicolon Boolean    Uses a semi-colon as CSV delimiter instead of the default comma.
+  -m, --merge Boolean        Merge PDOK properties with existing CSV columns.
   -o, --out String           Optional output filename.
 
 Examples
